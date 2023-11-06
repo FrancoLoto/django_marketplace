@@ -16,8 +16,9 @@ def items(request):
         items = items.filter(category_id=category_id)
 
     if query:
-        items = items.filter(Q(name__icontains=query) | Q(description__icontains=query))
-
+        items = items.filter(
+            Q(name__icontains=query) | Q(description__icontains=query)
+            )
 
     return render(request, 'item/items.html', {
         'items': items,
@@ -26,14 +27,17 @@ def items(request):
         'category_id': int(category_id),
     })
 
+
 def detail(request, pk):
     item = get_object_or_404(Item, pk=pk)
-    related_items = Item.objects.filter(category=item.category, is_sold=False).exclude(pk=pk)[0:3]
+    related_items = Item.objects.filter(
+        category=item.category, is_sold=False).exclude(pk=pk)[0:3]
 
     return render(request, 'item/detail.html', {
         'item': item,
         'related_items': related_items
     })
+
 
 @login_required
 def new(request):
@@ -47,13 +51,14 @@ def new(request):
             item.save()
 
             return redirect('item:detail', pk=item.id)
-    else:    
+    else:
         form = NewItemForm()
 
     return render(request, 'item/form.html', {
         'form': form,
         'title': 'New item',
     })
+
 
 @login_required
 def delete(request, pk):
@@ -62,6 +67,7 @@ def delete(request, pk):
     item.delete()
 
     return redirect('dashboard:index')
+
 
 @login_required
 def edit(request, pk):
@@ -75,7 +81,7 @@ def edit(request, pk):
             form.save()
 
             return redirect('item:detail', pk=item.id)
-    else:    
+    else:
         form = EditItemForm(instance=item)
 
     return render(request, 'item/form.html', {

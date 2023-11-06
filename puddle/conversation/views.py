@@ -4,6 +4,7 @@ from item.models import Item
 from .models import Conversation
 from .forms import ConversationMessageForm
 
+
 @login_required
 def new_conversation(request, item_pk):
 
@@ -12,13 +13,15 @@ def new_conversation(request, item_pk):
     if item.created_by == request.user:
         return redirect('dashboard:index')
 
-    conversations = Conversation.objects.filter(item=item).filter(members__in=[request.user.id])
+    conversations = Conversation.objects.filter(item=item).filter(
+        members__in=[request.user.id]
+        )
 
     if conversations:
         return redirect('conversation:detail', pk=conversations.first().id)
 
     if request.method == 'POST':
-        
+
         form = ConversationMessageForm(request.POST)
 
         if form.is_valid():
@@ -38,7 +41,8 @@ def new_conversation(request, item_pk):
 
     return render(request, 'conversation/new.html', {
         'form': form
-    }) 
+    })
+
 
 @login_required
 def inbox(request):
@@ -49,10 +53,12 @@ def inbox(request):
         'conversations': conversations
     })
 
+
 @login_required
 def detail(request, pk):
 
-    conversation = Conversation.objects.filter(members__in=[request.user.id]).get(pk=pk)
+    conversation = Conversation.objects.filter(
+        members__in=[request.user.id]).get(pk=pk)
 
     if request.method == 'POST':
 
@@ -74,4 +80,3 @@ def detail(request, pk):
         'conversation': conversation,
         'form': form,
     })
-
